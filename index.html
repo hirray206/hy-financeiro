@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HY.FINANCEIRO</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f97316'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial Black,sans-serif' font-weight='900' font-size='14' fill='%23000'%3EHY%3C/text%3E%3C/svg%3E">
+<style>
+  body{background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
+  .sp{width:36px;height:36px;border:3px solid #2a2a2a;border-top-color:#f97316;border-radius:50%;animation:sp .7s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="sp"></div>
+<script>
+  try {
+    var s = JSON.parse(localStorage.getItem('cd_session'));
+    if (s && s.email && s.exp > Date.now()) {
+      window.location.replace('/dashboard.html');
+    } else {
+      localStorage.removeItem('cd_session');
+      window.location.replace('/login.html');
+    }
+  } catch(e) { window.location.replace('/login.html'); }
+</script>
+</body>
+</html>
