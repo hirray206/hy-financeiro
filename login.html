@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HY.FINANCEIRO — Acesso</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f97316'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial Black,sans-serif' font-weight='900' font-size='14' fill='%23000'%3EHY%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;color:#f0f0f0;font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+canvas#matrix{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.card-wrap{position:relative;z-index:10;width:min(420px,92vw);}
+.card{background:rgba(17,17,17,0.88);border:1px solid #2a2a2a;border-radius:16px;padding:clamp(32px,6vw,48px) clamp(24px,6vw,44px);text-align:center;position:relative;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 0 60px rgba(249,115,22,0.08),0 24px 80px rgba(0,0,0,0.7);opacity:0;transform:translateY(28px) scale(0.97);animation:cardIn 0.7s cubic-bezier(.22,.8,.36,1) 1.4s forwards;}
+@keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1);}}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f97316,transparent);border-radius:16px 16px 0 0;animation:lineGlow 2s ease-in-out infinite alternate;}
+@keyframes lineGlow{from{opacity:.6;}to{opacity:1;box-shadow:0 0 12px #f97316;}}
+
+/* Logo identidade visual */
+.logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px;}
+.logo-hy{background:#f97316;padding:5px 12px;border-radius:5px;font-family:'Bebas Neue',sans-serif;font-size:32px;color:#000;line-height:1;letter-spacing:2px;}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:#f97316;flex-shrink:0;margin-bottom:1px;}
+.logo-right{display:flex;flex-direction:column;align-items:flex-start;}
+.logo-fin{font-weight:700;font-size:16px;letter-spacing:3px;color:#f0f0f0;}
+.logo-tag{font-size:8px;letter-spacing:2px;color:#606060;font-weight:500;text-transform:uppercase;}
+
+.subtitle{color:#606060;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:36px;}
+.form-group{text-align:left;margin-bottom:14px;}
+label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#606060;margin-bottom:7px;}
+input{width:100%;background:rgba(24,24,24,0.9);border:1px solid #2a2a2a;color:#f0f0f0;border-radius:8px;padding:12px 14px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;}
+input:focus{border-color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,0.12);}
+input::placeholder{color:#444;}
+.btn{width:100%;background:#f97316;color:#000;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn:hover{background:#fb923c;transform:translateY(-1px);box-shadow:0 6px 24px rgba(249,115,22,0.3);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.msg{border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;}
+.msg.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;}
+.sp{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:sp .6s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.footer{margin-top:28px;color:#404040;font-size:11px;line-height:1.6;}
+
+/* Mobile */
+@media(max-width:480px){
+  .card{padding:28px 20px;}
+  .logo-hy{font-size:26px;}
+  .logo-fin{font-size:14px;}
+}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="card-wrap">
+  <div class="card">
+    <div class="logo-wrap">
+      <span class="logo-hy">HY</span>
+      <span class="logo-dot"></span>
+      <div class="logo-right">
+        <span class="logo-fin">FINANCEIRO</span>
+        <span class="logo-tag">Automação e Análise de Dados</span>
+      </div>
+    </div>
+    <div class="subtitle">Acesso ao Sistema</div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn" id="btn" onclick="doLogin()">Acessar Sistema</button>
+    <div class="msg error" id="msg"></div>
+    <div class="footer">Acesso restrito.<br>Solicite credenciais ao administrador.</div>
+  </div>
+</div>
+<script>
+(function(){
+  var canvas=document.getElementById('matrix');
+  var ctx=canvas.getContext('2d');
+  var chars='01アイウエオカキクケコサシスセソタチツテトナニヌネノ{}[]()<>/*+-=!@#$%^&;:.,?~\\ ABCDEFabcdef0123456789';
+  var cols,drops,fontSize=14;
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;cols=Math.floor(canvas.width/fontSize);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*-50;}
+  resize();window.addEventListener('resize',resize);
+  function draw(){
+    ctx.fillStyle='rgba(10,10,10,0.055)';ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(var i=0;i<cols;i++){
+      var y=drops[i]*fontSize;if(y<0){drops[i]+=0.5;continue;}
+      ctx.font=fontSize+'px monospace';
+      ctx.fillStyle='#fff8f0';ctx.shadowColor='#f97316';ctx.shadowBlur=8;
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fontSize,y);
+      ctx.shadowBlur=0;
+      for(var t=1;t<=3;t++){ctx.fillStyle='rgba(249,115,22,'+(1-t/4)+')';ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fontSize,y-t*fontSize);}
+      if(y>canvas.height&&Math.random()>0.975)drops[i]=-Math.floor(Math.random()*30);
+      drops[i]+=0.5;
+    }
+    ctx.shadowBlur=0;
+  }
+  setInterval(draw,45);
+})();
+
+var BIN_ID='69e28a7536566621a8c4e506';
+var BIN_KEY='$2a$10$urWQlKlssQEtEaHNSWa.eOp1qGKKEIbd/t3rvP/EIjol4H6c6aykG';
+var LOG_BIN_ID=''; // será preenchido automaticamente no primeiro uso
+var TIMEOUT=15*60*1000;
+try{var s=JSON.parse(localStorage.getItem('cd_session'));if(s&&s.email&&s.exp>Date.now())window.location.replace('/dashboard.html');}catch(e){}
+
+async function sha256(str){var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function getUsers(){
+  var cached=localStorage.getItem('cd_users_cache'),cacheTime=parseInt(localStorage.getItem('cd_users_cache_time')||'0');
+  if(cached&&(Date.now()-cacheTime)<1800000)return JSON.parse(cached); // cache 30min
+  try{
+    var r=await fetch('https://api.jsonbin.io/v3/b/'+BIN_ID+'/latest',{headers:{'X-Master-Key':BIN_KEY}});
+    if(!r.ok)throw new Error();
+    var d=await r.json(),users=d.record||{};
+    localStorage.setItem('cd_users_cache',JSON.stringify(users));
+    localStorage.setItem('cd_users_cache_time',Date.now().toString());
+    return users;
+  }catch(e){if(cached)return JSON.parse(cached);return{};}
+}
+
+function getDeviceId(){
+  var id=localStorage.getItem('cd_device_id');
+  if(!id){
+    id=(Date.now().toString(36)+Math.random().toString(36).slice(2)+screen.width+'x'+screen.height).slice(0,20);
+    localStorage.setItem('cd_device_id',id);
+  }
+  return id;
+}
+
+async function registerLoginEvent(email, name){
+  try{
+    var logKey='cd_access_log';
+    var existing=[];
+    try{
+      var r=await fetch('https://api.jsonbin.io/v3/b/'+BIN_ID+'/latest',{headers:{'X-Master-Key':BIN_KEY}});
+      var d=await r.json();
+      existing=(d.record&&d.record.__access_log)||[];
+    }catch(e){}
+    var event={
+      email:email,
+      name:name,
+      deviceId:getDeviceId(),
+      ts:Date.now(),
+      ua:navigator.userAgent.slice(0,80),
+      tz:Intl.DateTimeFormat().resolvedOptions().timeZone||''
+    };
+    existing.unshift(event);
+    if(existing.length>500) existing=existing.slice(0,500);
+    // Salva log localmente também
+    var localLog=[];
+    try{localLog=JSON.parse(localStorage.getItem('cd_local_log')||'[]');}catch(e){}
+    localLog.unshift(event);
+    if(localLog.length>100) localLog=localLog.slice(0,100);
+    localStorage.setItem('cd_local_log',JSON.stringify(localLog));
+    // Tenta salvar no bin junto com usuários
+    var users=await getUsers();
+    users.__access_log=existing;
+    await fetch('https://api.jsonbin.io/v3/b/'+BIN_ID,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':BIN_KEY},
+      body:JSON.stringify(users)
+    });
+  }catch(e){console.warn('Log de acesso falhou (não crítico):',e);}
+}
+
+async function doLogin(){
+  var email=(document.getElementById('email').value||'').trim().toLowerCase(),password=document.getElementById('password').value||'';
+  var btn=document.getElementById('btn'),msgEl=document.getElementById('msg');msgEl.style.display='none';
+  if(!email||!password){showErr('Preencha e-mail e senha.');return;}
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> Verificando...';
+  try{
+    var hash=await sha256(password),users=await getUsers(),user=users[email];
+    if(!user){fail();return;}
+    if(user.status==='disabled'){showErr('✕ Acesso desativado. Contate o administrador.');reset();return;}
+    if(user.hash!==hash){fail();return;}
+    var session={
+      email:email,
+      name:user.name||email,
+      role:user.role||'user',
+      permissions:user.permissions||{analise_dash:true,cofre_senhas:true,excel_dash:true,admin:false},
+      deviceId:getDeviceId(),
+      exp:Date.now()+TIMEOUT
+    };
+    localStorage.setItem('cd_session',JSON.stringify(session));
+    // Redireciona imediatamente — log de acesso fica em segundo plano
+    window.location.replace('/dashboard.html');
+    // Fire-and-forget: registra acesso depois do redirect iniciar
+    setTimeout(function(){registerLoginEvent(email, user.name||email).catch(function(){});},100);
+  }catch(e){showErr('✕ Erro ao conectar. Tente novamente.');reset();}
+}
+function fail(){showErr('✕ E-mail ou senha incorretos.');reset();}
+function reset(){var btn=document.getElementById('btn');btn.disabled=false;btn.innerHTML='Acessar Sistema';}
+function showErr(t){var m=document.getElementById('msg');m.textContent=t;m.style.display='block';}
+</script>
+</body>
+</html>
